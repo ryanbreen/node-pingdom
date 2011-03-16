@@ -1,0 +1,10 @@
+{
+   "appenders": [
+   {
+      "type": "logLevelFilter",
+      "level": "trace",
+      "appender": {
+         "type": "console"
+      }
+   }]
+}

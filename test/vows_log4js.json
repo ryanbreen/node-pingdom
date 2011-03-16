@@ -1,0 +1,13 @@
+{
+   "appenders": [{
+      "type": "logLevelFilter",
+      "level": "trace",
+      "appender": {
+         "type": "file",
+         "filename": "vows.log",
+         "maxLogSize": 10485760,
+         "backups": 10,
+         "pollInterval": 15
+      }
+   }]
+}
