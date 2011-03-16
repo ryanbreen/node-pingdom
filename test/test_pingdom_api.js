@@ -65,6 +65,49 @@ vows.describe('pingdom API').addBatch({
 		}
 	},
 	
+	'Reference --' : {
+		'getReference' : {
+			topic: api.call('getReference'),
+			'returns region data': assertValidResponseCollection('regions', false, 0),
+			'returns timezone data': assertValidResponseCollection('timezones', false, 0),
+			'returns datetime formats': assertValidResponseCollection('datetimeformats', false, 0),
+			'returns number formats': assertValidResponseCollection('numberformats', false, 0)
+		}
+	},
+	
+	'Probes --' : {
+		'getProbes' : {
+			topic: api.call('getProbes', {'limit' : 10, 'onlyactive' : true}),
+			'returns probe server list': assertValidResponseCollection('probes', true, 10),
+			'which contains valid entries': function(response) {
+				assert.notEqual(undefined, response.probes[9]);
+				assert.equal(true, response.probes[9].active);
+			}
+		}
+	},
+	
+	'Instant Tests --' : {
+		'makeOneShotTest HTTP' : {
+			topic: api.call('makeOneShotTest', { 'host' : 'www.google.com', 'type' : 'http' }),
+			'returns valid data' : function(response) {
+				assert.notEqual(undefined, response.result);
+				assert.notEqual(undefined, response.result.status);
+				assert.notEqual(undefined, response.result.probeid);
+				assert.notEqual(undefined, response.result.probedesc);
+			}
+		},
+		
+		'makeOneShotTraceroute' : {
+			topic: api.call('makeOneShotTraceroute', { 'host' : 'www.google.com' }),
+			'returns valid data' : function(response) {
+				assert.notEqual(undefined, response.traceroute);
+				assert.notEqual(undefined, response.traceroute.result);
+				assert.notEqual(undefined, response.traceroute.probeid);
+				assert.notEqual(undefined, response.traceroute.probedescription);
+			}
+		}
+	},
+	
 	'Checks --' : {
 		'getChecks' : {
 	 		topic: api.call('getChecks', {}, this.callback),		
@@ -74,17 +117,14 @@ vows.describe('pingdom API').addBatch({
 							
 				topic: function(getChecksResponse) {
 					logger.trace('this:\n%s', sys.inspect(this));
-					this.context.id = getChecksResponse.checks[0].id;
-					pingdom.getCheckDetails(creds.username, creds.password, this.context.id, this.callback);
+					this.id = getChecksResponse.checks[0].id;
+					pingdom.getCheckDetails(creds.username, creds.password, this.id, this.callback);
 				},
 			
 				'returns a valid response' : function(response) {
 					assert.equal(this.id, response['check']['id']);
-				},
-			
-				'returns a valid response2' : assertValidResponseObject('check', 'id', this)
+				}
 			}
-			
 			/**
 		},
 		'createCheck' : {
