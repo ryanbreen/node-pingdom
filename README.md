@@ -10,13 +10,10 @@ npm install pingdom
 
 Tests use [vows](http://vowsjs.org) and can be run as `vows test/test_pingdom_api.js`.  Note that to run the test suite, you must create a credentials.json file within the root directory of this repository.  The file should be formatted like this:
 
-{
-   
-   'username' : 'myusername@mydomain.com',
-   
-   'password' : 'not_a_great_password'
-
-}
+   {
+      'username' : 'myusername@mydomain.com',
+      'password' : 'not_a_great_password'
+   }
 
 ## Usage
 
