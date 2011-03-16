@@ -12,6 +12,7 @@ Tests use [vows](http://vowsjs.org) and can be run as `vows test/test_pingdom_ap
 
 {
    'username' : 'myusername@mydomain.com',
+   
    'password' : 'not_a_great_password'
 }
 
