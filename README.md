@@ -4,7 +4,7 @@ Provides access to the Pingdom JSON API, currently in beta.  Note that you must 
 
 ## Installation
 
-npm install pingdom
+    npm install pingdom
 
 ## Tests
 
