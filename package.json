@@ -1,6 +1,6 @@
 {
   "name": "pingdom",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "./lib/pingdom.js",
   "description": "Pingdom JSON API library",
   "author": "Ryan Breen <ryan@ryanbreen.com>",
