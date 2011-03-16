@@ -52,12 +52,16 @@ var api = {
 			if (args !== undefined) arguments.push(args);
 			if (params != undefined) arguments.push(params);
 			arguments.push(this.callback);
+			
+			logger.trace('Arguments:\n%s', sys.inspect(arguments));
+			
             pingdom[command].apply(this, arguments);
         };
     }
 };
 
 vows.describe('pingdom API').addBatch({
+	
 	'Actions --' : {
 		'getActions' : {
 			topic: api.call('getActions', {'limit' : 4 }),
@@ -109,44 +113,56 @@ vows.describe('pingdom API').addBatch({
 	},
 	
 	'Checks --' : {
+		
 		'getChecks' : {
-	 		topic: api.call('getChecks', {}, this.callback),		
+	 		topic: api.call('getChecks', {'limit' : 10}),		
 			'returns a valid response' : assertValidResponseCollection('checks', false, 0),
 		
-			'-> getCheckDetails' : {
-							
+			'-> getCheckDetails' : {	
 				topic: function(getChecksResponse) {
-					logger.trace('this:\n%s', sys.inspect(this));
-					this.id = getChecksResponse.checks[0].id;
-					pingdom.getCheckDetails(creds.username, creds.password, this.id, this.callback);
+					var parent = this;
+					pingdom.getCheckDetails(creds.username, creds.password, getChecksResponse.checks[0].id, function(response) {
+						parent.callback(getChecksResponse, response);
+					});
 				},
-			
-				'returns a valid response' : function(response) {
-					assert.equal(this.id, response['check']['id']);
+							
+				'returns a valid response' : function(getChecksResponse, response) {
+					assert.equal(getChecksResponse.checks[0].id, response['check']['id']);
 				}
 			}
-			/**
 		},
+		
 		'createCheck' : {
 	 		topic: api.call('createCheck', {'name' : 'new_test', 'host' : 'www3.crowdfore.com', 'type' : 'http', 'url' : '/'}),
-			
-			'returns a valid response' : assertValidResponseObject('checks', false, 0),
+			'returns a valid response' : function(response) {
+				assert.notEqual(undefined, response.check);
+				assert.notEqual(undefined, response.check.id);
+				assert.notEqual(0, response.check.id);
+			},
 		
-			'-> getCheckDetails' : {
+			'-> modifyCheck' : {
 							
-				topic: function(getChecksResponse) {
-					this.id = getChecksResponse.checks[0].id;
-					pingdom.getCheckDetails(creds.username, creds.password, getChecksResponse.checks[0].id, this.callback);
+				topic: function(createCheck) {
+					pingdom.modifyCheck(creds.username, creds.password, createCheck.check.id, { 'name' : 'newer_check' }, this.callback);
 				},
 			
 				'returns a valid response' : function(response) {
-					logger.trace('%s', sys.inspect(response));
-					assert.equal(this.id, response['check']['id']);
+					assert.notEqual(undefined, response.message);
+					assert.equal("Modification of check was successful!", response.message);
 				},
+				
+				'-> deleteCheck' : {
+							
+					topic: function(modifyCheck, createCheck) {
+						pingdom.deleteCheck(creds.username, creds.password, createCheck.check.id, this.callback);
+					},
 			
-				'returns a valid response2' : assertValidResponseObject('check', 'id', this.id)
+					'returns a valid response' : function(response) {
+						assert.notEqual(undefined, response.message);
+						assert.equal("Deletion of check was successful!", response.message);
+					}
+				}
 			}
-			**/
 		}
 	}
 }).export(module, {error: false});
