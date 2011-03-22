@@ -1,6 +1,6 @@
 # node-pingdom
 
-Provides access to the Pingdom JSON API, currently in beta.  Note that you must have been granted access to the beta API for your account from Pingdom.
+Provides access to the Pingdom JSON API.
 
 ## Installation
 
