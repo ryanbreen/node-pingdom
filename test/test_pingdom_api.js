@@ -10,7 +10,7 @@ var happy = false;
 try {
 	var credsJSON = fs.readFileSync('credentials.json', 'utf-8');
 	var creds = JSON.parse(credsJSON);
-	happy = (creds !== undefined && creds.username !== undefined && creds.password !== undefined);
+	happy = (creds !== undefined && creds.username !== undefined && creds.password !== undefined && creds.app_key !== undefined);
 } catch(e) {
 	sys.puts(e.stack);
 }
@@ -48,7 +48,7 @@ function assertValidResponseObject(name, parameter, value) {
 var api = {
     call: function (command, params, args) {
         return function () {
-			var arguments = [ creds.username, creds.password ];
+			var arguments = [ creds.username, creds.password, creds.app_key ];
 			if (args !== undefined) arguments.push(args);
 			if (params != undefined) arguments.push(params);
 			arguments.push(this.callback);
@@ -65,7 +65,12 @@ vows.describe('pingdom API').addBatch({
 	'Actions --' : {
 		'getActions' : {
 			topic: api.call('getActions', {'limit' : 4 }),
-			'returns a valid response': assertValidResponseCollection('actions', true, 4)
+			'returns a valid response': function(response) {
+				assert.notEqual(null, response);
+				assert.notEqual(undefined, response.actions);
+				assert.notEqual(undefined, response.actions.alerts);
+				assert.equal(4, response.actions.alerts.length);
+			}
 		}
 	},
 	
@@ -121,7 +126,7 @@ vows.describe('pingdom API').addBatch({
 			'-> getCheckDetails' : {	
 				topic: function(getChecksResponse) {
 					var parent = this;
-					pingdom.getCheckDetails(creds.username, creds.password, getChecksResponse.checks[0].id, function(response) {
+					pingdom.getCheckDetails(creds.username, creds.password, creds.app_key, getChecksResponse.checks[0].id, function(response) {
 						parent.callback(getChecksResponse, response);
 					});
 				},
@@ -143,7 +148,7 @@ vows.describe('pingdom API').addBatch({
 			'-> modifyCheck' : {
 							
 				topic: function(createCheck) {
-					pingdom.modifyCheck(creds.username, creds.password, createCheck.check.id, { 'name' : 'newer_check' }, this.callback);
+					pingdom.modifyCheck(creds.username, creds.password, creds.app_key, createCheck.check.id, { 'name' : 'newer_check' }, this.callback);
 				},
 			
 				'returns a valid response' : function(response) {
@@ -154,7 +159,7 @@ vows.describe('pingdom API').addBatch({
 				'-> deleteCheck' : {
 							
 					topic: function(modifyCheck, createCheck) {
-						pingdom.deleteCheck(creds.username, creds.password, createCheck.check.id, this.callback);
+						pingdom.deleteCheck(creds.username, creds.password, creds.app_key, createCheck.check.id, this.callback);
 					},
 			
 					'returns a valid response' : function(response) {
