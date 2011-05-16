@@ -26,7 +26,7 @@ Ryan Breen (ryan at ryanbreen.com)
 
 ## License
 
-Copyright (C) 2011 by Ryan Breen and CloudFloor
+Copyright (C) 2011 by Ryan Breen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
