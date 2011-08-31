@@ -1,12 +1,12 @@
 {
   "name": "pingdom",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "main": "./lib/pingdom.js",
   "description": "Pingdom JSON API library",
   "author": "Ryan Breen <ryan@ryanbreen.com>",
   "directories": {"lib": "./lib", "test": "./test"},
   "dependencies": {
-    "log4js": ">=0.2.3",
+    "log4js": ">=0.3.0",
     "sprintf": ">=0.1.1",
     "vows": ">=0.5.6"
   },
