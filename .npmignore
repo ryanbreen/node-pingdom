@@ -1,0 +1,5 @@
+.git*
+.pdf
+credentials.json
+.log
+node_modules
