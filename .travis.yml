@@ -1,0 +1,8 @@
+language: node_js
+before_script:
+  openssl aes-256-cbc -K $encrypted_c57309734bac_key -iv $encrypted_c57309734bac_iv -in credentials.json.enc -out credentials.json -d
+deploy:
+  provider: npm
+  email: ryan@ryanbreen.com
+  api_key:
+    secure: bwhZIXKniloMQz6+dJUMECUTLbG7j24wPwuG9G/H/YiMd6I7Z9P2roeeIC7TKu/NzXGLjySzqPYDxIZm9VGonx2lY4rOVC0vDkju2iEY3PIzAU8aO2FP9mFdaE03PN5bFwoB1BheHYypyOalPFZ6Zugq+RmM8SftyscdjhhFuRc=
