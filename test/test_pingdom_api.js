@@ -136,11 +136,13 @@ vows.describe('pingdom API').addBatch({
 					assert.equal(getChecksResponse.checks[0].id, response['check']['id']);
 				}
 			}
+			/**
 		},
 		
 		'createCheck' : {
-	 		topic: api.call('createCheck', {'name' : 'new_test', 'host' : 'www3.crowdfore.com', 'type' : 'http', 'url' : '/'}),
+	 		topic: api.call('createCheck', {'name' : 'new_test', 'host' : 'www.google.com', 'type' : 'http', 'url' : '/'}),
 			'returns a valid response' : function(err, response) {
+				assert.equal(null, err);
 				assert.notEqual(undefined, response.check);
 				assert.notEqual(undefined, response.check.id);
 				assert.notEqual(0, response.check.id);
@@ -169,6 +171,7 @@ vows.describe('pingdom API').addBatch({
 					}
 				}
 			}
+			**/
 		}
 	}
 }).export(module, {error: false});
