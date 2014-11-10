@@ -7,7 +7,9 @@
   "directories": {"lib": "./lib", "test": "./test"},
   "dependencies": {
     "log4js": ">=0.3.0",
-    "sprintf": ">=0.1.1",
+    "sprintf": ">=0.1.1"
+  },
+  "devDependencies": {
     "vows": ">=0.5.6"
   },
   "engines": {"node": ">=0.4.0"},

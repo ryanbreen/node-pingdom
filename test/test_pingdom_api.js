@@ -25,7 +25,7 @@ if (!happy) {
  * Macro to validate that an array of results was properly composed.
  */
 function assertValidResponseCollection(collectionName, equals, length) {
-	return function (response) {
+	return function (err, response) {
 		assert.notEqual(null, response);
 		assert.notEqual(undefined, response[collectionName]);
 		assert[(equals ? 'equal' : 'notEqual')](length, response[collectionName].length);
@@ -34,8 +34,8 @@ function assertValidResponseCollection(collectionName, equals, length) {
 
 function assertValidResponseObject(name, parameter, value) {
 	logger.trace('%s', sys.inspect(value));
-	
-	return function (response) {
+
+	return function (err, response) {
 		logger.trace('%s', sys.inspect(response));
 		logger.trace('%s', response[name][parameter]);
 		logger.trace('%s', value);
@@ -65,11 +65,12 @@ vows.describe('pingdom API').addBatch({
 	'Actions --' : {
 		'getActions' : {
 			topic: api.call('getActions', {'limit' : 4 }),
-			'returns a valid response': function(response) {
+			'returns a valid response': function(err, response) {
+				assert.equal(null, err);
 				assert.notEqual(null, response);
 				assert.notEqual(undefined, response.actions);
 				assert.notEqual(undefined, response.actions.alerts);
-				assert.equal(4, response.actions.alerts.length);
+				assert.ok(response.actions.alerts.length <= 4);
 			}
 		}
 	},
@@ -88,7 +89,7 @@ vows.describe('pingdom API').addBatch({
 		'getProbes' : {
 			topic: api.call('getProbes', {'limit' : 10, 'onlyactive' : true}),
 			'returns probe server list': assertValidResponseCollection('probes', true, 10),
-			'which contains valid entries': function(response) {
+			'which contains valid entries': function(err, response) {
 				assert.notEqual(undefined, response.probes[9]);
 				assert.equal(true, response.probes[9].active);
 			}
@@ -98,7 +99,7 @@ vows.describe('pingdom API').addBatch({
 	'Instant Tests --' : {
 		'makeOneShotTest HTTP' : {
 			topic: api.call('makeOneShotTest', { 'host' : 'www.google.com', 'type' : 'http' }),
-			'returns valid data' : function(response) {
+			'returns valid data' : function(err, response) {
 				assert.notEqual(undefined, response.result);
 				assert.notEqual(undefined, response.result.status);
 				assert.notEqual(undefined, response.result.probeid);
@@ -108,7 +109,7 @@ vows.describe('pingdom API').addBatch({
 		
 		'makeOneShotTraceroute' : {
 			topic: api.call('makeOneShotTraceroute', { 'host' : 'www.google.com' }),
-			'returns valid data' : function(response) {
+			'returns valid data' : function(err, response) {
 				assert.notEqual(undefined, response.traceroute);
 				assert.notEqual(undefined, response.traceroute.result);
 				assert.notEqual(undefined, response.traceroute.probeid);
@@ -121,17 +122,17 @@ vows.describe('pingdom API').addBatch({
 		
 		'getChecks' : {
 	 		topic: api.call('getChecks', {'limit' : 10}),		
-			'returns a valid response' : assertValidResponseCollection('checks', false, 0),
+			'returns a valid response' : assertValidResponseCollection('checks', false, undefined),
 		
 			'-> getCheckDetails' : {	
-				topic: function(getChecksResponse) {
+				topic: function(err, getChecksResponse) {
 					var parent = this;
-					pingdom.getCheckDetails(creds.username, creds.password, creds.app_key, getChecksResponse.checks[0].id, function(response) {
-						parent.callback(getChecksResponse, response);
+					pingdom.getCheckDetails(creds.username, creds.password, creds.app_key, getChecksResponse.checks[0].id, function(err, response) {
+						parent.callback(err, getChecksResponse, response);
 					});
 				},
 							
-				'returns a valid response' : function(getChecksResponse, response) {
+				'returns a valid response' : function(err, getChecksResponse, response) {
 					assert.equal(getChecksResponse.checks[0].id, response['check']['id']);
 				}
 			}
@@ -139,7 +140,7 @@ vows.describe('pingdom API').addBatch({
 		
 		'createCheck' : {
 	 		topic: api.call('createCheck', {'name' : 'new_test', 'host' : 'www3.crowdfore.com', 'type' : 'http', 'url' : '/'}),
-			'returns a valid response' : function(response) {
+			'returns a valid response' : function(err, response) {
 				assert.notEqual(undefined, response.check);
 				assert.notEqual(undefined, response.check.id);
 				assert.notEqual(0, response.check.id);
@@ -147,22 +148,22 @@ vows.describe('pingdom API').addBatch({
 		
 			'-> modifyCheck' : {
 							
-				topic: function(createCheck) {
+				topic: function(err, createCheck) {
 					pingdom.modifyCheck(creds.username, creds.password, creds.app_key, createCheck.check.id, { 'name' : 'newer_check' }, this.callback);
 				},
 			
-				'returns a valid response' : function(response) {
+				'returns a valid response' : function(err, response) {
 					assert.notEqual(undefined, response.message);
 					assert.equal("Modification of check was successful!", response.message);
 				},
 				
 				'-> deleteCheck' : {
 							
-					topic: function(modifyCheck, createCheck) {
+					topic: function(err1, modifyCheck, err2, createCheck) {
 						pingdom.deleteCheck(creds.username, creds.password, creds.app_key, createCheck.check.id, this.callback);
 					},
 			
-					'returns a valid response' : function(response) {
+					'returns a valid response' : function(err, response) {
 						assert.notEqual(undefined, response.message);
 						assert.equal("Deletion of check was successful!", response.message);
 					}
