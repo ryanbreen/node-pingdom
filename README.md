@@ -18,7 +18,7 @@ Tests use [vows](http://vowsjs.org) and can be run as `vows test/test_pingdom_ap
 
 ## Usage
 
-Each method call of the Pingdom API expects your username and password.  All optional parameters are passed in as a hash of name/value pairs which are composed into a query string.  By default, the Pingdom API is assumed to be version 2.0, but this can be modified via the setAPIVersion method.
+Each method call of the Pingdom API expects your username and password.  All optional parameters are passed in as a hash of name/value pairs which are composed into a query string.  By default, the Pingdom API is assumed to be version 2.0, but this can be modified via the setAPIVersion method.  If you're using Pingdom's [multi-user authentication](https://www.pingdom.com/features/api/documentation/#multi-user+authentication), then provide a username of the form 'master@example.com/subaccount@example.com'.
 
 ## Author
 
